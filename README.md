@@ -18,4 +18,12 @@ These are some pictures of this project.
 
 # The whole shopping system code link
 
+https://github.com/lokenetwork/admin-shopping
 
+https://github.com/lokenetwork/shop-manage
+
+https://github.com/lokenetwork/shopping-php-server
+
+https://github.com/lokenetwork/shopping-chat-server
+
+https://github.com/lokenetwork/hybird_shopping_app
