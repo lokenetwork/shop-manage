@@ -1,14 +1,7 @@
-# shop manage
+# 买买提店铺后台
 
-This project is build at PHP YAF framework. 
+采用YAF开发，客服系统是GO+websocket+protobuf
 
-Shopkeeper can use this project to manage their shop.
-
-The project is not finished,Because I have not time.I need to find a job now.
-
-I write the all code by myself.
-
-These are some pictures of this project.
 
 ![image](https://github.com/lokenetwork/shop-manage/blob/master/project_picture/Goods_add.png)
 
@@ -16,20 +9,17 @@ These are some pictures of this project.
 
 ![image](https://github.com/lokenetwork/shop-manage/blob/master/project_picture/goods-category-list-todo.png)
 
-# The whole shopping system code link
 
-https://github.com/lokenetwork/admin-shopping
+# 买买提平台关项目代码
 
-https://github.com/lokenetwork/shop-manage
+客户端APP：https://github.com/lokenetwork/hybird_shopping_app
 
-https://github.com/lokenetwork/shopping-php-server
+PHP接口服务器：https://github.com/lokenetwork/shopping-php-server
 
-https://github.com/lokenetwork/shopping-chat-server
+GO聊天服务器：https://github.com/lokenetwork/shopping-chat-server
 
-https://github.com/lokenetwork/hybird_shopping_app
+通行证服务器（单点登录）：https://github.com/lokenetwork/passport-shopping-system
 
-https://github.com/lokenetwork/passport-shopping-system
+商家后台：https://github.com/lokenetwork/shop-manage
 
-https://github.com/lokenetwork/shopkeeper_ionic_client
-
-
+总平台后台：https://github.com/lokenetwork/admin-shopping
