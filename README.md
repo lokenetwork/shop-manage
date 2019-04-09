@@ -3,11 +3,19 @@
 采用YAF开发，客服系统是GO+websocket+protobuf
 
 
-![image](https://github.com/lokenetwork/shop-manage/blob/master/project_picture/Goods_add.png)
+![image](https://github.com/lokenetwork/shop-manage/blob/master/project_picture/shop_tongji.png)
+
+![image](https://github.com/lokenetwork/shop-manage/blob/master/project_picture/goods_tongji.png)
 
 ![image](https://github.com/lokenetwork/shop-manage/blob/master/project_picture/goods_list.png)
 
-![image](https://github.com/lokenetwork/shop-manage/blob/master/project_picture/goods-category-list-todo.png)
+![image](https://github.com/lokenetwork/shop-manage/blob/master/project_picture/edit_goods.png)
+
+![image](https://github.com/lokenetwork/shop-manage/blob/master/project_picture/shop_info.png)
+
+![image](https://github.com/lokenetwork/shop-manage/blob/master/project_picture/choose_location.png)
+
+![image](https://github.com/lokenetwork/shop-manage/blob/master/project_picture/category.png)
 
 
 # 买买提平台关项目代码
