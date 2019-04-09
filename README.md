@@ -8,8 +8,8 @@
 ![image](https://github.com/lokenetwork/shop-manage/blob/master/project_picture/chat.png)
 
 ![image](https://github.com/lokenetwork/shop-manage/blob/master/project_picture/chat_client.png)
-
 ![image](https://github.com/lokenetwork/shop-manage/blob/master/project_picture/session_list.png)
+
 ![image](https://github.com/lokenetwork/shop-manage/blob/master/project_picture/goods_tongji.png)
 
 ![image](https://github.com/lokenetwork/shop-manage/blob/master/project_picture/goods_list.png)
