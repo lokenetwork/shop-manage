@@ -1,0 +1,7 @@
+{
+    "require": {
+        "ezyang/htmlpurifier": "^4.10",
+        "katzgrau/klogger": "dev-master",
+        "lcobucci/jwt": "^3.2"
+    }
+}

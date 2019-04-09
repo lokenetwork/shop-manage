@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <title><?= $_title ?></title>
+  <script src="/static/common_js/jquery-2.1.4.min.js"></script>
+
+</head>
+
+<body style="">
+
+<style>
+
+  body{
+    width:300px; overflow-x:hidden; margin:0px; color:#222428;
+    min-height:800px;
+  }
+
+  .session_div{
+    width:299px;
+    height:100%;
+    overflow:auto;
+    border:none;
+    overflow-x:hidden;
+    border-right:2px solid #8eb6fd ;
+
+  }
+  .scrollbar{
+    width:300px;
+    height:800px;
+    margin:0 auto;
+
+  }
+  .session_div-1::-webkit-scrollbar{ /*滚动条整体样式*/
+    width:1px; /*高宽分别对应横竖滚动条的尺寸*/
+    height:1px;
+  }
+  .session_div-1::-webkit-scrollbar-thumb{ /*滚动条里面小方块*/
+    border-radius:10px;
+    -webkit-box-shadow:inset 0 0 5px rgba(0, 0, 0, 0.2);
+    background:#8eb6fd;
+  }
+  .session_div-1::-webkit-scrollbar-track{ /*滚动条里面轨道*/
+    -webkit-box-shadow:inset 0 0 5px rgba(0, 0, 0, 0.2);
+    border-radius:0px;
+    background:#8eb6fd;
+  }
+  .session{
+    padding-left:10px;
+  }
+  .session > table{
+    width:100%;
+  }
+
+  .session_select{
+    background:#f2f2f3
+  }
+  .touxiang_img_td{
+    width:75px;padding-right:10px; padding-top:10px;padding-bottom:10px;
+  }
+  .touxiang_img{
+    width:100%;border-radius:100px;border: 1px solid #8aadef;
+    background:#dde9ff;
+  }
+  .nick_name_td{
+    padding-top:10px;padding-bottom:10px;
+    border-bottom:1px solid #c5c5c5;
+  }
+  .session_select .nick_name_td{
+    border-bottom:0px;
+  }
+  .nick_name{
+    color:#222428;font-size:20px
+  }
+  .not_read{
+    color:#f04141;font-size:13px
+  }
+  .hide{
+    display:none;
+  }
+</style>
+
+
+<div class="session_div session_div-1">
+  <div class="scrollbar">
+    <div id="mark_top">
+
+    </div>
+    <div id="mark">
+
+    </div>
+    <!---
+    <div class="session session_select">
+      <table>
+        <tr>
+          <td class="touxiang_img_td">
+            <img src="/static/common_img/logo.png" class="touxiang_img">
+          </td>
+          <td class="nick_name_td">
+            <div class="nick_name">
+              一直买DDD
+            </div>
+            <div class="not_read">
+              有未读消息
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="session ">
+      <table>
+        <tr>
+          <td class="touxiang_img_td">
+            <img src="/static/common_img/logo.png" class="touxiang_img">
+          </td>
+          <td class="nick_name_td">
+            <div class="nick_name">
+              一直买DDD
+            </div>
+            <div class="not_read">
+              有未读消息
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="session ">
+      <table>
+        <tr>
+          <td class="touxiang_img_td">
+            <img src="/static/common_img/logo.png" class="touxiang_img">
+          </td>
+          <td class="nick_name_td">
+            <div class="nick_name">
+              一直买DDD
+            </div>
+            <div class="not_read">
+              有未读消息
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="session">
+      <table>
+        <tr>
+          <td class="touxiang_img_td">
+            <img src="/static/common_img/logo.png" class="touxiang_img">
+          </td>
+          <td class="nick_name_td">
+            <div class="nick_name">
+              一直买DDD
+            </div>
+            <div class="not_read">
+              有未读消息
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  --->
+
+
+
+
+  </div>
+</div>
+
+
+</body>
+<script>
+
+
+  var session_list = JSON.parse('<?= $session_list?>');
+  console.log(session_list);
+
+  $(function(){
+    // do something
+    ini_session();
+
+    setTimeout("select_session(parent.current_user_id)", 500);
+  });
+
+  function select_session(client_id) {
+      parent.window.current_user_id = client_id;
+      $(".session_select").removeClass("session_select");
+    $(".session_"+client_id).addClass("session_select");
+    $(".not_read_"+client_id).hide();
+
+      //把会话设置成已读。页面的未读标识去掉。
+    //调http api 获取会员的昵称。
+    $.ajax({
+
+      type: "POST",
+
+      url: "/Chat/sessionread",
+
+      data: "client_id="+client_id,
+
+      success: function(res){
+      }
+
+    });
+
+      //请求聊天记录
+     parent.history_chat_page = 1;
+     parent.load_history_chat(client_id);
+  }
+
+  function ini_session() {
+
+    var html = '';
+
+    for(var i = 0, len = session_list.length; i < len; i++){
+      if ( 0 == session_list[i].shop_read) {
+        var not_read_display_class = "  ";
+      } else {
+        var not_read_display_class =  " hide ";
+      }
+
+      if( i == 0 ){
+          parent.current_user_id = session_list[i].client_id;
+        html = '    <div class="session  session_select session_'+session_list[i].client_id+' " '+'onclick=select_session('+session_list[i].client_id+')'+' >\n' +
+                '      <table>\n' +
+                '        <tr>\n' +
+                '          <td class="touxiang_img_td">\n' +
+                '            <img src="/static/common_img/logo.png" class="touxiang_img">\n' +
+                '          </td>\n' +
+                '          <td class="nick_name_td">\n' +
+                '            <div class="nick_name">\n' +
+                '              '+session_list[i].nick_name+'\n' +
+                '            </div>\n' +
+                '            <div class="not_read hide '+'not_read_'+session_list[i].client_id+' " >\n' +
+                '              有未读消息\n' +
+                '            </div>\n' +
+                '          </td>\n' +
+                '        </tr>\n' +
+                '      </table>\n' +
+                '    </div>'
+
+          ;
+      }
+      else{
+        html = '    <div class="session  session_'+session_list[i].client_id+' " '+'onclick=select_session('+session_list[i].client_id+')'+' >\n' +
+              '      <table>\n' +
+              '        <tr>\n' +
+              '          <td class="touxiang_img_td">\n' +
+              '            <img src="/static/common_img/logo.png" class="touxiang_img">\n' +
+              '          </td>\n' +
+              '          <td class="nick_name_td">\n' +
+              '            <div class="nick_name">\n' +
+              '              '+session_list[i].nick_name+'\n' +
+              '            </div>\n' +
+              '            <div class="not_read  '+'not_read_'+session_list[i].client_id+'  '+not_read_display_class+'">\n' +
+              '              有未读消息\n' +
+              '            </div>\n' +
+              '          </td>\n' +
+              '        </tr>\n' +
+              '      </table>\n' +
+              '    </div>'
+      }
+
+      $("#mark").before(html);
+
+    }
+  }
+  
+  function mark_session(message) {
+    console.log(message);
+    //判断会话是否已经存在
+    var session_exist = false;
+    for(var i = 0, len = session_list.length; i < len; i++){
+          if(session_list[i].client_id == message.fromUserId){
+            session_exist = true;
+          }
+    }
+
+    console.log("session_exist +" +session_exist)
+
+    if( session_exist ){
+        //标记成有未读消息
+        $(".not_read_"+message.fromUserId).removeClass('hide');
+    }else{
+
+      //调http api 获取会员的昵称。
+      $.ajax({
+
+        type: "POST",
+
+        url: "/Chat/getnickname",
+
+        data: "client_id="+message.fromUserId,
+
+        success: function(nick_name){
+
+          //加入会话
+          var session_info = {
+            'client_id': message.fromUserId,
+            'nick_name': nick_name,
+            'not_read': true
+          };
+          session_list.push(session_info);
+
+          var not_read_display_class = " "+'not_read_'+message.fromUserId+" ";
+          html = '    <div class="session  session_'+session_list[i].client_id+' " '+'onclick=select_session('+session_list[i].client_id+')'+' >\n' +
+                '      <table>\n' +
+                '        <tr>\n' +
+                '          <td class="touxiang_img_td">\n' +
+                '            <img src="/static/common_img/logo.png" class="touxiang_img">\n' +
+                '          </td>\n' +
+                '          <td class="nick_name_td">\n' +
+                '            <div class="nick_name">\n' +
+                '              '+nick_name+'\n' +
+                '            </div>\n' +
+                '            <div class="not_read  '+'not_read_'+message.fromUserId+'  '+not_read_display_class+'">\n' +
+                '              有未读消息\n' +
+                '            </div>\n' +
+                '          </td>\n' +
+                '        </tr>\n' +
+                '      </table>\n' +
+                '    </div>'
+          $("#mark_top").before(html);
+
+        }
+
+      });
+
+    }
+  }
+
+
+</script>
+<?= $client_less ?>
+</html>
+
+</html>
+

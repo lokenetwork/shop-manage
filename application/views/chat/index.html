@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+      <title><?= $_title ?></title>
+      <link rel="<?= $css_rel ?>" type="text/css" href="/static/common_css/table_align_center.<?= $css_type ?>">
+      <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css">
+      <link rel="stylesheet" type="text/css" href="/static/font_awesome/css/font-awesome.min.css">
+      <script src="/static/common_js/jquery-2.1.4.min.js"></script>
+      <script src="/static/bootstrap/js/bootstrap.js"></script>
+      <script src="/static/common_js/jump_tips.js"></script>
+      <script src="/static/common_js/push.js"></script>
+      <link rel="<?= $css_rel ?>" type="text/css" href="/static/common_css/common.<?= $css_type ?>">
+      <link rel="<?= $css_rel ?>" type="text/css" href="/application/views/chat/index.<?= $css_type ?>">
+</head>
+
+<body style="">
+
+<style>
+
+</style>
+
+<div id="output">
+
+</div>
+<table class="chat_table  ">
+      <tr>
+            <td colspan="2">
+                  <div class="header">
+                        买买提客服系统
+                  </div>
+            </td>
+      </tr>
+      <tr>
+            <td width="300px" style="margin:0px;padding:0px">
+                  <iframe name="session_frame" id="session_frame" src="/Chat/session" style="margin:0px;padding:0px" frameborder="0"
+                          scrolling="">
+                  </iframe>
+            </td>
+            <td>
+                  <iframe name="chat_frame" id="chat_frame" src="/Chat/chat" style="width:100%" frameborder="0" scrolling="">
+                  </iframe>
+            </td>
+      </tr>
+      <tr>
+            <td colspan="2">
+                  <div style="text-align:center;background:#3880ff;color:#fff;padding-top:10px;padding-bottom:10px">
+                        <div>
+                              客服系统 - 买买提
+                        </div>
+                        <div>
+                              Copyright © 1999-2016, CSDN.NET, All Rights Reserved
+                        </div>
+                  </div>
+            </td>
+      </tr>
+</table>
+
+
+</body>
+<script src="/static/common_js/protobuf.js"></script>
+<script>
+
+
+	var WSMessage;
+	var AuthMessage;
+	var Message;
+	var wsmessage;
+	var authmessage;
+	var message;
+	var auth_buffer;
+	var text_buffer;
+	var websocket;
+	var content_buffer;
+	var current_user_id;
+	var wsUri = "ws://127.0.0.1:8080/ws";
+	var load_next_page = false;
+	var allow_notify ;
+	protobuf.load("/static/protobuf/Message.proto", function (err, root) {
+		if (err) throw err;
+		WSMessage = root.lookup("main.WSMessage");
+		AuthMessage = root.lookup("main.AuthMessage");
+		Message = root.lookup("main.Message");
+
+
+	});
+
+	function ws_init() {
+		websocket = new WebSocket(wsUri);
+		websocket.onopen = function (evt) {
+			onOpen(evt)
+		};
+		websocket.onclose = function (evt) {
+			onClose(evt)
+		};
+		websocket.onmessage = function (evt) {
+			console.log(evt);
+			onMessage(evt)
+		};
+		websocket.onerror = function (evt) {
+			onError(evt)
+		};
+	}
+
+	$(function(){
+		// do something
+		ws_init();
+	});
+
+	function send_text(text) {
+		message = Message.create({
+			from: "shoper",
+			messageType: "text",
+			fromUserId: 0,
+			toUserId: current_user_id,
+			content: text
+		});
+		content_buffer = Message.encode(message).finish()
+		wsmessage = WSMessage.create({type: "message", content: content_buffer});
+		text_buffer = WSMessage.encode(wsmessage).finish();
+		websocket.send(text_buffer);
+		console.log(message);
+	}
+
+	function send_img(img_url) {
+		message = Message.create({
+			from: "shoper",
+			messageType: "img",
+			fromUserId: 0,
+			toUserId: current_user_id,
+			content: img_url
+		});
+		content_buffer = Message.encode(message).finish()
+		wsmessage = WSMessage.create({type: "message", content: content_buffer});
+		text_buffer = WSMessage.encode(wsmessage).finish();
+		websocket.send(text_buffer);
+		console.log("send_img");
+	}
+
+	var history_chat_page ;
+
+	function load_history_chat(client_id) {
+		chat_frame.window.clean_chat();
+		chat_frame.window.show_loading();
+		$.ajax({
+			type: "POST",
+			url: "/Chat/getchathistory",
+			data: "client_id="+client_id+"&p="+history_chat_page,
+			success: function(message_list){
+				console.log(message_list);
+				for(var i = 0, len = message_list.length; i < len; i++){
+					chat_frame.window.load_history(message_list[i]);
+				}
+				chat_frame.window.hide_loading();
+				chat_frame.window.scroll_bottom();
+			}
+		});
+		history_chat_page = 1;
+	}
+
+	function load_history_next_page() {
+		history_chat_page++;
+		chat_frame.window.show_load_history_next();
+		$.ajax({
+			type: "POST",
+			url: "/Chat/getchathistory",
+			data: "client_id="+current_user_id+"&p="+history_chat_page,
+			success: function(message_list){
+				console.log(message_list);
+				if( message_list.length == 0 ){
+					chat_frame.window.show_no_more_history();
+                        }else{
+					for(var i = 0, len = message_list.length; i < len; i++){
+						chat_frame.window.load_history(message_list[i]);
+					}
+                        }
+				load_next_page = false;
+				chat_frame.window.hide_load_history_next();
+				chat_frame.window.can_scroll_again();
+			}
+		});
+	}
+
+	function onOpen(evt) {
+		console.log("onOpen");
+		var token = "<?= $token ?>";
+		authmessage = AuthMessage.create({token: token});
+		content_buffer = AuthMessage.encode(authmessage).finish()
+		wsmessage = WSMessage.create({type: "shoper_auth", content: content_buffer});
+		auth_buffer = WSMessage.encode(wsmessage).finish();
+		websocket.send(auth_buffer);
+	}
+
+	function onClose(evt) {
+		console.log("DISCONNECTED");
+	}
+
+	function onGranted() {
+		allow_notify = true;
+	}
+
+	function onDenied() {
+		allow_notify = false;
+	}
+
+	Push.Permission.request(onGranted, onDenied);
+
+
+
+	function onMessage(evt) {
+		var reader = new FileReader();
+		reader.readAsArrayBuffer(evt.data);
+		reader.onload = function (e) {
+
+			var buf = new Uint8Array(reader.result);
+			var content = WSMessage.decode(buf).content;
+			var message = Message.decode(content);
+
+			//判断用户ID是否是当前的用户ID。
+			if (message.fromUserId != current_user_id) {
+
+				if( allow_notify ){
+					Push.create("买买提提醒", {
+						body: "有新消息到达",
+						icon: "/static/common_img/logo.png",
+						timeout: 5000,
+						onClick: function() {
+							console.log(this);
+						}
+					});
+                        }else{
+					alert("有新消息到达");
+                        }
+
+				//把未读的信息插入会话列表或者标记一下。
+				session_frame.window.mark_session(message);
+				return 0;
+			}else{
+				$.ajax({
+					type: "POST",
+					url: "/Chat/sessionread",
+					data: "client_id="+current_user_id,
+					success: function(res){
+					}
+
+				});
+
+				chat_frame.window.receive_text(message,"bottom");
+			}
+
+			//console.log(message);
+			//writeToScreen('<span style="color: blue;">RESPONSE: ' + message.content + '</span>');
+
+		}
+	}
+	
+	function  not_read(message) {
+            
+	}
+
+	function onError(evt) {
+		alert("连接失败，请刷新页面");
+		console.log("onError");
+		console.log(evt);
+	}
+
+
+
+</script>
+<<?= $client_less ?>
+</html>
+

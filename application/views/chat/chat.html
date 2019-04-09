@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+<head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+      <title><?= $_title ?></title>
+      <link rel="stylesheet" type="text/css" href="/static/font_awesome/css/font-awesome.min.css">
+      <link rel="<?= $css_rel ?>" type="text/css" href="/application/views/chat/chat.<?= $css_type ?>">
+      <script src="/static/common_js/jquery-2.1.4.min.js"></script>
+
+</head>
+
+<body style="">
+
+<style>
+      body{
+            width:overflow-x:hidden;
+            margin:0px;
+
+            color:#222428;
+            min-height:800px;
+      }
+      .touxiang_img_td{
+            width:75px;
+            padding-right:10px; padding-top:10px;padding-bottom:10px;
+      }
+      .touxiang_img{
+            width:75px;
+      }
+      .message_td{
+
+      }
+      .message_table{
+            width:100%;
+            padding-left:10px;
+            padding-right:10px;
+      }
+      .buyer_message_td{
+            text-align:right;
+      }
+
+      #top_message{
+            text-align:center;
+            display:none;
+      }
+      #no_more_history{
+            text-align:center;
+            display:none;
+      }
+</style>
+
+<div id="no_more_history">
+      没有更多历史信息
+</div>
+
+<div id="top_message">
+      正在加载更多历史消息.....
+</div>
+
+<!---
+<table class="message_table">
+      <tr>
+            <td class="touxiang_img_td">
+                  <img src="/static/common_img/logo.png" class="touxiang_img">
+            </td>
+            <td class="message_td">
+                  <div class="">
+                        您好，这里是安踏专卖店，有什么可以帮到你吗？
+                  </div>
+            </td>
+      </tr>
+</table>
+<table class="message_table">
+      <tr>
+            <td class="message_td buyer_message_td">
+                  <div class="">
+                        您好，这里是安踏专卖店，有什么可以帮到你吗？
+                  </div>
+            </td>
+            <td class="touxiang_img_td">
+                  <img src="/static/common_img/logo.png" class="touxiang_img">
+            </td>
+      </tr>
+</table>
+<table class="message_table">
+      <tr>
+            <td class="touxiang_img_td">
+                  <img src="/static/common_img/logo.png" class="touxiang_img">
+            </td>
+            <td class="message_td">
+                  <div class="">
+                        <a href="http://192.168.0.120/goods/20190402/5ca366b01cbf7.png" target="_blank">
+                              <img style="width: 100px;" src="http://192.168.0.120/goods/20190402/5ca366b01cbf7.png">
+                        </a>
+                  </div>
+            </td>
+      </tr>
+</table>
+<table class="message_table">
+      <tr>
+            <td class="message_td buyer_message_td">
+                  <div class="">
+                        <a href="http://192.168.0.120/goods/20190402/5ca366b01cbf7.png" target="_blank">
+                              <img style="width: 100px;" src="http://192.168.0.120/goods/20190402/5ca366b01cbf7.png">
+                        </a>
+                  </div>
+            </td>
+
+            <td class="touxiang_img_td">
+                  <img src="/static/common_img/logo.png" class="touxiang_img">
+            </td>
+      </tr>
+</table>
+-->
+
+<div style="height:100px;" id="bottom_message">
+      <input type="file" style="opacity: 0; " id="img_input" onchange="upload_pic(this)">
+</div>
+
+<style>
+      .input_table{
+            position:fixed;
+            bottom:0px;
+            width:100%;
+            background:#efeeec;
+            padding-top:10px;
+            padding-bottom:10px;
+      }
+
+</style>
+
+<table style="" class="input_table">
+      <tr>
+            <td style="width:65px; text-align:center">
+                  <button class="orange" onclick="click_file_input()">照片</button>
+            </td>
+            <td>
+                  <textarea id="input_text" style="width: 100%; border-color:#ececec; height:50px;"></textarea>
+            </td>
+            <td style="width:65px; text-align:center">
+                  <button class="blue" onclick="child_send_text()">发送</button>
+            </td>
+      </tr>
+</table>
+<style>
+      #loadind{
+            position:fixed;top: 0px;left: 0px;width:100%;height:100%; background:#0f0f0f;opacity:0.4;
+            display:none;
+      }
+      #loadind_text{
+            position:fixed;top: 45%;left: 0px;width:100%;height:100%;
+            display:none;
+      }
+</style>
+<div id="loadind" style="">
+
+</div>
+<div id="loadind_text" style="">
+      <div style="text-align:center;color:#fff">正在加载....</div>
+</div>
+
+</body>
+<script>
+	var img_upload_domain = "<?= $img_upload_domain ?>";
+	var img_diaplay_domain = "<?= $img_diaplay_domain ?>";
+	var no_more_history = false;
+
+	function child_send_text() {
+		var text = $("#input_text").val();
+		parent.send_text(text);
+		$("#input_text").val("");
+
+		var insert_html = '<table class="message_table">\n' +
+			'  <tr>\n' +
+			'    <td class="touxiang_img_td">\n' +
+			'      <img src="/static/common_img/logo.png" class="touxiang_img">\n' +
+			'    </td>\n' +
+			'    <td class="message_td">\n' +
+			'      <div class="">\n' +
+			'        ' + text + '\n' +
+			'      </div>\n' +
+			'    </td>\n' +
+			'  </tr>\n' +
+			'</table>';
+		$("#bottom_message").before(insert_html);
+		var h = $(document).height()-$(window).height();
+		$(document).scrollTop(h);
+	}
+
+	function scroll_bottom() {
+		var h = $(document).height()-$(window).height();
+		$(document).scrollTop(h);
+	}
+
+	function load_history(message) {
+		if( 'buyer' == message.senderType ) {
+                  if ('text' == message.messageType) {
+                        var insert_html = '<table class="message_table">\n' +
+                              '  <tr>\n' +
+                              '    <td class="message_td buyer_message_td">\n' +
+                              '      <div class="">\n' +
+                              '        ' + message.content + '\n' +
+                              '      </div>\n' +
+                              '    </td>\n' +
+                              '    <td class="touxiang_img_td">\n' +
+                              '      <img src="/static/common_img/person.png" class="touxiang_img">\n' +
+                              '    </td>\n' +
+                              '  </tr>\n' +
+                              '</table>';
+                  }
+                  else if ('img' == message.messageType) {
+
+                        var insert_html = '<table class="message_table">\n' +
+                              '  <tr>\n' +
+                              '    <td class="message_td buyer_message_td">\n' +
+                              '      <div class="">\n' +
+                              '        <a href="' + message.content + '" target="_blank">\n' +
+                              '          <img style="width: 100px;" src="' + message.content + '">\n' +
+                              '        </a>\n' +
+                              '      </div>\n' +
+                              '    </td>\n' +
+                              '\n' +
+                              '    <td class="touxiang_img_td">\n' +
+                              '      <img src="/static/common_img/person.png" class="touxiang_img">\n' +
+                              '    </td>\n' +
+                              '  </tr>\n' +
+                              '</table>';
+
+                  }
+		}else if( 'shoper' == message.senderType  ){
+			console.log("shoper");
+			if ('text' == message.messageType) {
+				var insert_html = '<table class="message_table">\n' +
+					'      <tr>\n' +
+					'            <td class="touxiang_img_td">\n' +
+					'                  <img src="/static/common_img/logo.png" class="touxiang_img">\n' +
+					'            </td>\n' +
+					'            <td class="message_td">\n' +
+					'                  <div class="">\n' +
+					'                       ' +message.content+ '\n' +
+					'                  </div>\n' +
+					'            </td>\n' +
+					'      </tr>\n' +
+					'</table>';
+			}
+			else if ('img' == message.messageType) {
+
+				var insert_html = '<table class="message_table">\n' +
+					'      <tr>\n' +
+					'            <td class="touxiang_img_td">\n' +
+					'                  <img src="/static/common_img/logo.png" class="touxiang_img">\n' +
+					'            </td>\n' +
+					'            <td class="message_td">\n' +
+					'                  <div class="">\n' +
+					'                        <a href="'+message.content+'" target="_blank">\n' +
+					'                              <img style="width: 100px;" src="'+message.content+'">\n' +
+					'                        </a>\n' +
+					'                  </div>\n' +
+					'            </td>\n' +
+					'      </tr>\n' +
+					'</table>';
+
+			}
+            }
+
+		$("#top_message").after(insert_html);
+	}
+
+	function receive_text(message) {
+		if ('text' == message.messageType) {
+			var insert_html = '<table class="message_table">\n' +
+				'  <tr>\n' +
+				'    <td class="message_td buyer_message_td">\n' +
+				'      <div class="">\n' +
+				'        ' + message.content + '\n' +
+				'      </div>\n' +
+				'    </td>\n' +
+				'    <td class="touxiang_img_td">\n' +
+				'      <img src="/static/common_img/person.png" class="touxiang_img">\n' +
+				'    </td>\n' +
+				'  </tr>\n' +
+				'</table>';
+		} else if ('img' == message.messageType) {
+
+			var insert_html = '<table class="message_table">\n' +
+				'  <tr>\n' +
+				'    <td class="message_td buyer_message_td">\n' +
+				'      <div class="">\n' +
+				'        <a href="' + message.content + '" target="_blank">\n' +
+				'          <img style="width: 100px;" src="' + message.content + '">\n' +
+				'        </a>\n' +
+				'      </div>\n' +
+				'    </td>\n' +
+				'\n' +
+				'    <td class="touxiang_img_td">\n' +
+				'      <img src="/static/common_img/person.png" class="touxiang_img">\n' +
+				'    </td>\n' +
+				'  </tr>\n' +
+				'</table>';
+
+		}
+
+		$("#bottom_message").before(insert_html);
+		var h = $(document).height()-$(window).height();
+		$(document).scrollTop(h);
+
+	}
+
+	function show_loading() {
+		console.log("sadasdas");
+		$("#loadind").show();
+		$("#loadind_text").show();
+	}
+	function hide_loading() {
+		$("#loadind").hide();
+		$("#loadind_text").hide();
+	}
+
+	function click_file_input() {
+		$("#img_input").click();
+	}
+
+	//清理会话
+	function clean_chat() {
+            $(".message_table").remove();
+	}
+
+	function show_load_history_next() {
+		$("#top_message").show();
+	}
+
+	function hide_load_history_next() {
+		$("#top_message").hide();
+	}
+	function show_no_more_history() {
+		no_more_history = true;
+		$("#no_more_history").show();
+	}
+
+	function hide_no_more_history() {
+		$("#no_more_history").hide();
+	}
+
+	function upload_pic(obj) {
+		var file_obj = document.getElementById('img_input').files[0];
+
+		var fd = new FormData();
+		fd.append('img_input', file_obj);
+
+		$.ajax({
+			url: img_upload_domain + '/Index/uploadMultipleGoodsPicture',
+			type: 'POST',
+			data: fd,
+			processData: false,  //tell jQuery not to process the data
+			contentType: false,  //tell jQuery not to set contentType
+			//这儿的三个参数其实就是XMLHttpRequest里面带的信息。
+			success: function (arg, a1, a2) {
+				console.log(arg.image_info[0].image_name);
+				console.log(a1);
+				console.log(a2);
+				//清空值,让用户可以再次上传同样的文件.
+				$(this).val("");
+				console.log(img_diaplay_domain + arg.image_info[0].image_name);
+				var img_url = img_diaplay_domain + arg.image_info[0].image_name;
+
+
+				parent.send_img(img_url);
+
+				var insert_html = '<table class="message_table">\n' +
+					'      <tr>\n' +
+					'            <td class="touxiang_img_td">\n' +
+					'                  <img src="/static/common_img/logo.png" class="touxiang_img">\n' +
+					'            </td>\n' +
+					'            <td class="message_td">\n' +
+					'                  <div class="">\n' +
+					'                        <a href="'+img_url+'" target="_blank">\n' +
+					'                              <img style="width: 100px;" src="'+img_url+'">\n' +
+					'                        </a>\n' +
+					'                  </div>\n' +
+					'            </td>\n' +
+					'      </tr>\n' +
+					'</table>';
+				$("#bottom_message").before(insert_html);
+
+				scroll_bottom();
+			}
+
+		})
+	}
+
+	function can_scroll_again(){
+		$(document).scrollTop(100);
+      }
+
+
+	window.onscroll = function() { //绑定scroll事件
+		var t = document.documentElement.scrollTop || document.body.scrollTop;
+		if( false == parent.load_next_page && t == 0 && false == no_more_history ){
+			      parent.load_next_page = true;
+                        parent.window.load_history_next_page();
+            }
+	}
+</script>
+<?= $client_less ?>
+</html>
+
+</html>
+
